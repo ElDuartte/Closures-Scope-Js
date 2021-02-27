@@ -10,3 +10,9 @@ const anotherFuncion = () => {
 };
 
 anotherFuncion();
+
+const helloWorld = () => {
+	globalVar = "I'm global";
+	debugger;
+};
+helloWorld();

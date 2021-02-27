@@ -1,0 +1,640 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Curso de Closures y Scope en JavaScript</title><style>
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.highlight-default {
+}
+.highlight-gray {
+	color: rgb(155,154,151);
+}
+.highlight-brown {
+	color: rgb(100,71,58);
+}
+.highlight-orange {
+	color: rgb(217,115,13);
+}
+.highlight-yellow {
+	color: rgb(223,171,1);
+}
+.highlight-teal {
+	color: rgb(15,123,108);
+}
+.highlight-blue {
+	color: rgb(11,110,153);
+}
+.highlight-purple {
+	color: rgb(105,64,165);
+}
+.highlight-pink {
+	color: rgb(173,26,114);
+}
+.highlight-red {
+	color: rgb(224,62,62);
+}
+.highlight-gray_background {
+	background: rgb(235,236,237);
+}
+.highlight-brown_background {
+	background: rgb(233,229,227);
+}
+.highlight-orange_background {
+	background: rgb(250,235,221);
+}
+.highlight-yellow_background {
+	background: rgb(251,243,219);
+}
+.highlight-teal_background {
+	background: rgb(221,237,234);
+}
+.highlight-blue_background {
+	background: rgb(221,235,241);
+}
+.highlight-purple_background {
+	background: rgb(234,228,242);
+}
+.highlight-pink_background {
+	background: rgb(244,223,235);
+}
+.highlight-red_background {
+	background: rgb(251,228,228);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(55, 53, 47, 0.6);
+	fill: rgba(55, 53, 47, 0.6);
+}
+.block-color-brown {
+	color: rgb(100,71,58);
+	fill: rgb(100,71,58);
+}
+.block-color-orange {
+	color: rgb(217,115,13);
+	fill: rgb(217,115,13);
+}
+.block-color-yellow {
+	color: rgb(223,171,1);
+	fill: rgb(223,171,1);
+}
+.block-color-teal {
+	color: rgb(15,123,108);
+	fill: rgb(15,123,108);
+}
+.block-color-blue {
+	color: rgb(11,110,153);
+	fill: rgb(11,110,153);
+}
+.block-color-purple {
+	color: rgb(105,64,165);
+	fill: rgb(105,64,165);
+}
+.block-color-pink {
+	color: rgb(173,26,114);
+	fill: rgb(173,26,114);
+}
+.block-color-red {
+	color: rgb(224,62,62);
+	fill: rgb(224,62,62);
+}
+.block-color-gray_background {
+	background: rgb(235,236,237);
+}
+.block-color-brown_background {
+	background: rgb(233,229,227);
+}
+.block-color-orange_background {
+	background: rgb(250,235,221);
+}
+.block-color-yellow_background {
+	background: rgb(251,243,219);
+}
+.block-color-teal_background {
+	background: rgb(221,237,234);
+}
+.block-color-blue_background {
+	background: rgb(221,235,241);
+}
+.block-color-purple_background {
+	background: rgb(234,228,242);
+}
+.block-color-pink_background {
+	background: rgb(244,223,235);
+}
+.block-color-red_background {
+	background: rgb(251,228,228);
+}
+.select-value-color-default { background-color: rgba(206,205,202,0.5); }
+.select-value-color-gray { background-color: rgba(155,154,151, 0.4); }
+.select-value-color-brown { background-color: rgba(140,46,0,0.2); }
+.select-value-color-orange { background-color: rgba(245,93,0,0.2); }
+.select-value-color-yellow { background-color: rgba(233,168,0,0.2); }
+.select-value-color-green { background-color: rgba(0,135,107,0.2); }
+.select-value-color-blue { background-color: rgba(0,120,223,0.2); }
+.select-value-color-purple { background-color: rgba(103,36,222,0.2); }
+.select-value-color-pink { background-color: rgba(221,0,129,0.2); }
+.select-value-color-red { background-color: rgba(255,0,26,0.2); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="0c2b6aac-11db-4052-a7b7-b1d483740506" class="page sans"><header><h1 class="page-title">Curso de Closures y Scope en JavaScript</h1></header><div class="page-body"><h1 id="a90e7008-0141-4f18-ab20-482b0895d069" class="">Scope</h1><p id="9e3bf367-e908-4d81-8571-779f1bb0ed45" class="">Es el alcance que va a tener una variable dentro del código.</p><p id="d4a11dc5-9daa-42f4-bcd7-8a1872d508ba" class="">En otras palabras el Scope es el cargado de decir a que bloques de código va a acceder una variable.</p><h3 id="84558288-0f40-4450-ab1e-6c876bcb95b4" class="">Global Scope: </h3><p id="0fbd257d-06be-4e21-b3da-c33f7f09fba2" class="">No están dentro de funciones o bloques, por lo tanto se puede acceder a ellas de manera global.</p><ul id="2a8bb16c-4bfa-43aa-ae8d-13741bc0b07a" class="bulleted-list"><li>Con var podemos re-asignar una variable pero es una <strong>mala práctica.</strong></li></ul><ul id="34c7065e-5e0d-4a74-89f8-6354d188b38e" class="bulleted-list"><li>Con let y const no podemos, aparecerá un error.</li></ul><ul id="ba080cc7-8b76-4f38-928b-e01224688d2a" class="bulleted-list"><li>Es una mala práctica crear una variable sin las palabras reservadas: var, let y const.Si se asigna una variable dentro de una función sin las palabras reservadas será una variable global.</li></ul><ul id="bf55da43-5212-4cb4-a7a6-6ab1416a84a4" class="bulleted-list"><li>La doble asignación de una variable también es una mala práctica.</li></ul><p id="1d095b6a-7fad-4bf3-bccd-ff21e9db8a88" class="">
+</p><p id="7c3ef524-aa1e-46e6-8928-b5a6d18d6760" class=""><strong>El Local Scope:</strong> se refiere a la variable o funcion que esta dentro de un bloque o funcion especifica. Solo se pueden acceder a ellas (ejecutar o llamar) dentro del entrono en donde conviven.</p><p id="ec80182e-d660-47ea-b869-44f70ff19f6a" class=""><strong>El ambito lexico:</strong> se refiere a que una funcion puede acceder a una funcion o variable fuera de ella.Cada nivel interno puede acceder a sus niveles externos hasta poder alcanzarlas.</p><p id="ea2cc2d7-cb21-4dbb-aa64-02d590aadf69" class="">
+</p><p id="5ff7f261-78f6-4839-ba50-43bb11116523" class="">Var se puede re asignar.</p><p id="e838e05b-64f2-4563-8307-20241238067e" class="">Let no se puede re asignar.</p><p id="2fcee744-2b76-406a-9f70-50b021e737e8" class="">Recomendado por el profe usar let y const.</p><p id="2ce428fb-92e4-4d88-a274-73905b66eca4" class="">
+</p><p id="c1d564a8-d3a1-4209-ad03-9c6e0ca6e9c1" class="">
+</p><p id="90c09e6c-3328-49a8-a4f3-c2bc7250e2e2" class="">const fruits = () =&gt; {<div class="indented"><p id="0ec1d82a-d73c-4ad3-bd11-686750ca9f3b" class="">if (true) {<div class="indented"><p id="6af2dc63-c8eb-412c-9860-b02bb85c07fb" class="">var fruits1 = <em>&quot;apple&quot;</em>;</p><p id="cfe05983-bf27-4784-8d32-e633cec661ac" class="">let fruits2 = <em>&quot;banana&quot;</em>;</p><p id="3891ef46-9e02-4f17-9499-9262ae2179d1" class="">const fruits3 = <em>&quot;kiwi&quot;</em>;</p></div></p><p id="bff4d049-c27a-4481-978a-4e32933464c8" class="">}</p><p id="057dbb50-f087-46af-bdd6-179e1035d337" class="">console.log(fruits1);</p><p id="30667ea7-b0fd-4ff9-bf65-2fa978d81189" class="">console.log(fruits2);</p><p id="b634e8ae-dc73-44dc-869a-ead3bd425dd0" class="">console.log(fruits3);</p></div></p><p id="bb9256c1-35f9-429e-af63-9f021419b869" class="">};</p><p id="90e30e44-3d63-42f7-a3e7-b44ba8132288" class="">fruits();</p><p id="2ca4c231-18ff-4605-b4d2-8959c478d346" class="">
+</p><p id="5fb787d4-7041-4be4-be49-74e45471ef01" class=""><strong>En el ejemplo anterior:</strong></p><p id="47bd53b1-e1c4-46a0-ba94-8361ab75068e" class="">var es una asignación del scope local dentro de una función.</p><p id="79a7bbea-0613-4440-bf8d-ee5d4b761196" class="">let y const se establecen dentro del bloque (Eje: if{})</p><p id="caaf3e71-bd33-4936-b529-033fd1688fd3" class="">
+</p><p id="4573ed7c-8468-4264-a100-d7b321beaa9e" class="">
+</p><p id="507d3ebb-9b8a-4fea-92e8-6da98c954e39" class="">const fruits = () =&gt; {<div class="indented"><p id="3177373d-dbbc-40e3-a1f3-680de846ac29" class="">if (true) {<div class="indented"><p id="60f5580d-ffba-4867-9ee4-538e7108d28d" class="">var fruits1 = <em>&quot;apple&quot;</em>;</p><p id="c95d3fe8-10f9-4a9f-9b0a-3cdf64663150" class="">let fruits2 = <em>&quot;banana&quot;</em>;</p><p id="98768da1-f51b-434f-9f02-5422bf7a2305" class="">const fruits3 = <em>&quot;kiwi&quot;</em>;</p><p id="c9da1dbe-1824-4486-a105-caf5f66eac21" class="">console.log(fruits2);</p><p id="cbe21b65-d236-4554-a604-cb86f735cf3d" class="">console.log(fruits3);</p></div></p><p id="5b9f1b0d-9380-4b0b-ba74-549ca7a07434" class="">}</p><p id="5a9f509c-3f33-481c-8c0e-115a0f32a9b1" class="">console.log(fruits1);</p></div></p><p id="b64eca60-5071-4ccb-a5ab-00aa365120d0" class="">};</p><p id="7a8197c6-ec31-4114-afb1-800051b80d30" class="">fruits();</p><p id="71d2a4ff-5563-4e76-a044-e6410c3b6911" class="">
+</p><p id="362887eb-1e15-46f2-a093-9b794f95515a" class=""><strong>Consola:</strong></p><p id="d91a0111-7b10-4056-9fe6-99d874973993" class="">banana</p><p id="3ef6ce3f-d55c-4a11-a4b3-fe12862b1986" class="">kiwi</p><p id="689ff7d0-a949-4397-9ec6-511525d11965" class="">apple</p><p id="8dbd41ad-76a0-4d6f-83cd-3ef81b26f06b" class="">
+</p><p id="511b0702-0397-42ce-9486-278bc8bd08c8" class="">
+</p><h2 id="e4f22b8d-9626-4027-8161-d3c2b7d5d5f0" class="">Closures</h2><p id="c13045cd-9a9c-4719-8833-6c4408422883" class="">JavaScript no fomenta el uso de datos privados.</p><p id="d701230d-310a-498c-8ee7-401233e3fdeb" class="">Por medio de los Closures podemos crear valores que solo pueden ser accedidos por medio de métodos y que no van a estar disponibles fuera de esta función </p><p id="c41184d7-080c-4dc4-a819-d88e2bd3db3c" class="">
+</p><h2 id="33aa65e3-655c-4470-9897-670b3c799c27" class="">Hoisting</h2><p id="f999573f-924a-4888-ae65-be1db5614012" class="">
+</p><p id="b1a91c88-45b1-4f6b-8679-4a6d83e974d5" class=""><strong>El hosting:</strong> Es el trabajo que hace el interpreter del engine de javaScript (motor de javaScript) que esta por defecto en nuestros navegadores, cuyo propósito es levantar todas nuestras funciones y variables inicializadas al principio de nuestro código, todo con el fin de poderlo optimizar.</p><p id="e4486ebb-0dc9-460d-ac66-772cea4eca75" class=""><strong>Nota:</strong> para que el hoisting no te de una mala pasada, por buenas costumbres manda a llamar primero las variables y funciones en tu editor de código.</p><figure id="e5522c1d-0cbc-463c-990c-e9d5a8c70715" class="image"><a href="Curso%20de%20Closures%20y%20Scope%20en%20JavaScript%20e5522c1d0cbc463c990ce9d5a8c70715/Untitled.png"><img style="width:860px" src="Curso%20de%20Closures%20y%20Scope%20en%20JavaScript%20e5522c1d0cbc463c990ce9d5a8c70715/Untitled.png"/></a></figure><p id="54dd10ce-a2c6-4937-883d-b40228074c7a" class="">
+</p></div></article></body></html>
